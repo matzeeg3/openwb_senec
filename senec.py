@@ -16,18 +16,6 @@ client = mqtt.Client()
 # Verbinden mit dem Broker
 client.connect(broker_address, broker_port)
 
-# Nachricht erstellen
-message = "Hello, world!"
-
-# MQTT-Topic definieren
-topic = "topic/test"
-
-# Nachricht senden
-client.publish(topic, message)
-
-
-
-
 def myDecode(stringValue):
 # Parameter:
 # stringValue:  String Wert, im Format Typ_Wert
