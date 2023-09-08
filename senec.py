@@ -107,10 +107,10 @@ if not (jsondata['PM1OBJ1'] ['P_AC'] [2] is None):
 #SENEC: Strom (A) Werte 0.88 >> 1.67
 if not (jsondata['PM1OBJ1'] ['I_AC'] [0] is None):
     topic = "openWB/set/evu/APhase1"
-    client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2))
+    client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [0],0,2))
 if not (jsondata['PM1OBJ1'] ['I_AC'] [1] is None):
     topic = "openWB/set/evu/APhase2"
-    client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2))
+    client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [1],0,2))
 if not (jsondata['PM1OBJ1'] ['I_AC'] [2] is None):
     topic = "openWB/set/evu/APhase3"
     client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2))
