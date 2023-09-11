@@ -9,8 +9,8 @@ ipaddress = "senecip"
 broker_address = "openwbip or localhost"
 broker_port = 1883
 debug = False
-evudata = True
-pvdata = True
+evudata = True #True  oder False
+pvdata = True #True oder False
 
 #ipaddress = str(sys.argv[1])
 
