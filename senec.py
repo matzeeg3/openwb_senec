@@ -5,12 +5,15 @@ import time
 import ssl
 import paho.mqtt.client as mqtt
 
-ipaddress = "senecip"
-broker_address = "openwbip or localhost"
+start_time = time.time()
+
+ipaddress = "senec_ip"
+broker_address = "openwb ip"
 broker_port = 1883
 debug = False
 evudata = True #True  oder False
 pvdata = True #True oder False
+intervall = 5
 
 #ipaddress = str(sys.argv[1])
 
@@ -63,6 +66,20 @@ def writeVal(stringValue, multiplier, decimalpoints):
         val = 0
 
     return val
+  
+subreturn=0
+def on_message(client, userdata, message):
+    global subreturn
+    print("message received " ,str(message.payload.decode("utf-8")))
+    subreturn = (message.payload.decode("utf-8"))
+    #print(subreturn)
+
+    #return subreturn
+
+
+#client.loop_start()
+client.on_message=on_message   
+
 
 if evudata == True:
   #EVU Daten
@@ -134,15 +151,31 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'] is None):
     topic = "openWB/set/houseBattery/%Soc"
     client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'],0,0))
 
-
+## PV Daten
 if pvdata == True:
-
   #SENEC: Leistung Wechselrichter in (W) Werte
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       topic = "openWB/set/pv/1/W"
       client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
+      pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
+      client.loop_start()
+      client.subscribe("data/pvwh", qos=0)
+      time.sleep(0.1)
+      client.loop_stop()
+      pvwh = pvwatt * intervall / 3600
+      gpvwh = pvwh + float(subreturn)
+      client.publish("data/pvwh", gpvwh, retain=True)      
+
+
+
 
 #warten 1 Sekunden da der Client sonst zu schnell disconnectet
-time.sleep (1)
+time.sleep (0.5)
 # Client beenden
 client.disconnect()
+end_time = time.time()
+# Die Gesamtdauer in Sekunden berechnen
+execution_time = end_time - start_time
+
+# Die Ausführungszeit in Sekunden ausgeben
+print(f"Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
