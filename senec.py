@@ -136,6 +136,8 @@ if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
     topic = "openWB/set/pv/1/W"
     client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
 
+#warten 1 Sekunden da der Client sonst zu schnell disconnectet
+time.sleep (1)
 # Client beenden
 client.disconnect()
 
