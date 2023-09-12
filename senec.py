@@ -10,7 +10,7 @@ start_time = time.time()
 ipaddress = "senec_ip"
 broker_address = "openwb ip"
 broker_port = 1883
-debug = False
+debug = False #True  oder False
 evudata = True #True  oder False
 pvdata = True #True oder False
 intervall = 5
@@ -70,15 +70,14 @@ def writeVal(stringValue, multiplier, decimalpoints):
 subreturn=0
 def on_message(client, userdata, message):
     global subreturn
-    print("message received " ,str(message.payload.decode("utf-8")))
+    if debug == True: print("message topic " ,str(message.topic))
+    if debug == True: print("message received " ,str(message.payload.decode("utf-8")))
     subreturn = (message.payload.decode("utf-8"))
-    #print(subreturn)
 
-    #return subreturn
+client.on_message=on_message
 
 
-#client.loop_start()
-client.on_message=on_message   
+
 
 
 if evudata == True:
@@ -93,7 +92,32 @@ if evudata == True:
   #SENEC: Gesamtleistung (W) Werte -3000  >> 3000
   if not (jsondata['PM1OBJ1'] ['P_TOTAL'] is None):
       topic = "openWB/set/evu/W"
-      client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['P_TOTAL'],0,0))
+      gridwatt = writeVal(jsondata['PM1OBJ1'] ['P_TOTAL'],0,0)
+      client.publish(topic, gridwatt, qos=0)
+      if gridwatt < 0:
+        gridwatt = abs(gridwatt)
+        client.loop_start()
+        client.subscribe("data/gridwhout", qos=0)
+        time.sleep(0.1)
+        client.loop_stop()
+        gridwhout = gridwatt * intervall / 3600
+        if debug == True: print("gridwhout: ", gridwhout)
+        ggridwhout = gridwhout + float(subreturn)
+        if debug == True: print("gird wh out store: ", float(subreturn))
+        client.publish("data/gridwhout", ggridwhout, retain=True, qos=0)  
+        client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
+      else:
+        gridwatt = abs(gridwatt)
+        client.loop_start()
+        client.subscribe("data/gridwhin", qos=0)
+        time.sleep(0.1)
+        client.loop_stop()
+        gridwhin = gridwatt * intervall / 3600
+        if debug == True: print("gridwhin: ", gridwhin)
+        ggridwhin = gridwhin + float(subreturn)
+        if debug == True: print("gird wh in store: ", float(subreturn))
+        client.publish("data/gridwhin", ggridwhin, retain=True, qos=0)
+        client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
   
   
   #SENEC: Frequenz(Hz) Werte 49.00 >> 50.00
@@ -144,33 +168,63 @@ jsondata = json.load(response)
 #SENEC: Batterieleistung (W) Werte -345 (Entladen) >> 1200 (laden)
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
     topic = "openWB/set/houseBattery/W"
-    client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'],0,0))
+    batwatt = writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'],0,0)
+    client.publish(topic, batwatt, qos=0)
+    if batwatt < 0:
+      batwatt = abs(batwatt)
+      client.loop_start()
+      client.subscribe("data/batwhout", qos=0)
+      time.sleep(0.1)
+      client.loop_stop()
+      batwhout = batwatt * intervall / 3600
+      if debug == True: print("batwhout: ", batwhout)
+      gbatwhout = batwhout + float(subreturn)
+      if debug == True: print("bat wh out store: ", float(subreturn))
+      client.publish("data/batwhout", gbatwhout, retain=True, qos=0)
+      client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
+    else:
+      batwatt = abs(batwatt)
+      client.loop_start()
+      client.subscribe("data/batwhin", qos=0)
+      time.sleep(0.1)
+      client.loop_stop()
+      batwhin = batwatt * intervall / 3600
+      if debug == True: print("batwhin: ", batwhin)
+      gbatwhin = batwhin + float(subreturn)
+      if debug == True: print("bat wh in store: ", float(subreturn))
+      client.publish("data/batwhin", gbatwhin, retain=True, qos=0)
+      client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
 
 #SENEC: Fuellmenge in Prozent Werte 10 >> 55 >> 100
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'] is None):
     topic = "openWB/set/houseBattery/%Soc"
     client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'],0,0))
 
+
+
 ## PV Daten
 if pvdata == True:
   #SENEC: Leistung Wechselrichter in (W) Werte
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       topic = "openWB/set/pv/1/W"
-      client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
       pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
+      client.publish(topic, pvwatt)
       client.loop_start()
       client.subscribe("data/pvwh", qos=0)
       time.sleep(0.1)
       client.loop_stop()
       pvwh = pvwatt * intervall / 3600
+      if debug == True: print("pvwh: ", pvwh)
       gpvwh = pvwh + float(subreturn)
-      client.publish("data/pvwh", gpvwh, retain=True)      
+      if debug == True: print("pv wh out store: ", float(subreturn))
+      client.publish("data/pvwh", gpvwh, retain=True, qos=0)
+      client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
 
 
 
 
 #warten 1 Sekunden da der Client sonst zu schnell disconnectet
-time.sleep (0.5)
+time.sleep (0.2)
 # Client beenden
 client.disconnect()
 end_time = time.time()
