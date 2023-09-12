@@ -7,10 +7,10 @@ import paho.mqtt.client as mqtt
 
 start_time = time.time()
 
-ipaddress = "senec_ip"
-broker_address = "openwb ip"
+ipaddress = "senecip"
+broker_address = "127.0.0.1"
 broker_port = 1883
-debug = False #True  oder False
+debug = True #True  oder False
 evudata = True #True  oder False
 pvdata = True #True oder False
 intervall = 5
@@ -77,19 +77,14 @@ def on_message(client, userdata, message):
 
 client.on_message=on_message
 
-
-
-
+reqdata = '{"PM1OBJ1": {"FREQ":"","U_AC":"","I_AC":"","P_AC":"","P_TOTAL":""},"ENERGY": {"GUI_BAT_DATA_FUEL_CHARGE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":""}}'
+reqdata = bytes(reqdata, 'utf-8')
+response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
+jsondata = json.load(response)
 
 if evudata == True:
   #EVU Daten
-  reqdata = '{"PM1OBJ1":{"FREQ":"","U_AC":"","I_AC":"","P_AC":"","P_TOTAL":""}}'
-  reqdata = bytes(reqdata, 'utf-8')
-  response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
-  jsondata = json.load(response)
-  
-  
-  
+    
   #SENEC: Gesamtleistung (W) Werte -3000  >> 3000
   if not (jsondata['PM1OBJ1'] ['P_TOTAL'] is None):
       topic = "openWB/set/evu/W"
@@ -161,10 +156,6 @@ if evudata == True:
       client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2))
 
 #Batteriedaten:
-reqdata='{"ENERGY":{"GUI_BAT_DATA_FUEL_CHARGE":"","GUI_BAT_DATA_POWER":"","GUI_BAT_DATA_VOLTAGE":"","GUI_BAT_DATA_OA_CHARGING":"","GUI_INVERTER_POWER":""}}'
-reqdata = bytes(reqdata, 'utf-8')
-response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
-jsondata = json.load(response)
 
 #SENEC: Batterieleistung (W) Werte -345 (Entladen) >> 1200 (laden)
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
