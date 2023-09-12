@@ -23,3 +23,10 @@ Installation Steps:
    * * * * * sleep 55 && python /path-to-script/senec.py >/dev/null 2>&1
    ```
 8. Enjoy
+
+
+## Next Steps
+- Better Error Handling
+- Script Optimisazion (Threading)
+- Add Variable that Script can be used in openWB Software 1 and Software 2
+- Add Docker Container for easy deployment via Enviroment Variables
