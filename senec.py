@@ -74,6 +74,7 @@ def on_message(client, userdata, message):
     if debug == True: print("message received " ,str(message.payload.decode("utf-8")))
     subreturn = (message.payload.decode("utf-8"))
 
+
 client.on_message=on_message
 
 
@@ -98,25 +99,25 @@ if evudata == True:
         gridwatt = abs(gridwatt)
         client.loop_start()
         client.subscribe("data/gridwhout", qos=0)
-        time.sleep(0.1)
+        time.sleep(0.15)
         client.loop_stop()
         gridwhout = gridwatt * intervall / 3600
         if debug == True: print("gridwhout: ", gridwhout)
         ggridwhout = gridwhout + float(subreturn)
         if debug == True: print("gird wh out store: ", float(subreturn))
-        client.publish("data/gridwhout", ggridwhout, retain=True, qos=0)  
+        client.publish("data/gridwhout", ggridwhout, retain=True)  
         client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
       else:
         gridwatt = abs(gridwatt)
         client.loop_start()
         client.subscribe("data/gridwhin", qos=0)
-        time.sleep(0.1)
+        time.sleep(0.15)
         client.loop_stop()
         gridwhin = gridwatt * intervall / 3600
         if debug == True: print("gridwhin: ", gridwhin)
         ggridwhin = gridwhin + float(subreturn)
         if debug == True: print("gird wh in store: ", float(subreturn))
-        client.publish("data/gridwhin", ggridwhin, retain=True, qos=0)
+        client.publish("data/gridwhin", ggridwhin, retain=True)
         client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
   
   
@@ -174,25 +175,25 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
       batwatt = abs(batwatt)
       client.loop_start()
       client.subscribe("data/batwhout", qos=0)
-      time.sleep(0.1)
+      time.sleep(0.15)
       client.loop_stop()
       batwhout = batwatt * intervall / 3600
       if debug == True: print("batwhout: ", batwhout)
       gbatwhout = batwhout + float(subreturn)
       if debug == True: print("bat wh out store: ", float(subreturn))
-      client.publish("data/batwhout", gbatwhout, retain=True, qos=0)
+      client.publish("data/batwhout", gbatwhout, retain=True)
       client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
     else:
       batwatt = abs(batwatt)
       client.loop_start()
       client.subscribe("data/batwhin", qos=0)
-      time.sleep(0.1)
+      time.sleep(0.15)
       client.loop_stop()
       batwhin = batwatt * intervall / 3600
       if debug == True: print("batwhin: ", batwhin)
       gbatwhin = batwhin + float(subreturn)
       if debug == True: print("bat wh in store: ", float(subreturn))
-      client.publish("data/batwhin", gbatwhin, retain=True, qos=0)
+      client.publish("data/batwhin", gbatwhin, retain=True)
       client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
 
 #SENEC: Fuellmenge in Prozent Werte 10 >> 55 >> 100
@@ -211,13 +212,13 @@ if pvdata == True:
       client.publish(topic, pvwatt)
       client.loop_start()
       client.subscribe("data/pvwh", qos=0)
-      time.sleep(0.1)
+      time.sleep(0.15)
       client.loop_stop()
       pvwh = pvwatt * intervall / 3600
       if debug == True: print("pvwh: ", pvwh)
       gpvwh = pvwh + float(subreturn)
       if debug == True: print("pv wh out store: ", float(subreturn))
-      client.publish("data/pvwh", gpvwh, retain=True, qos=0)
+      client.publish("data/pvwh", gpvwh, retain=True)
       client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
 
 
