@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 start_time = time.time()
 
 ipaddress = "senecip"
-broker_address = "127.0.0.1"
+broker_address = "openwb or broker ip"
 broker_port = 1883
 debug = True #True  oder False
 evudata = True #True  oder False
@@ -70,8 +70,7 @@ def writeVal(stringValue, multiplier, decimalpoints):
 subreturn=0
 def on_message(client, userdata, message):
     global subreturn
-    if debug == True: print("message topic " ,str(message.topic))
-    if debug == True: print("message received " ,str(message.payload.decode("utf-8")))
+    if debug == True: print("message topic " ,str(message.topic)," message received " ,str(message.payload.decode("utf-8")))
     subreturn = (message.payload.decode("utf-8"))
 
 
@@ -118,7 +117,6 @@ if evudata == True:
         gridwhout = gridwatt * intervall / 3600
         if debug == True: print("gridwhout: ", gridwhout)
         ggridwhout = gridwhout + gridwhoutstore
-        if debug == True: print("gird wh out store: ", gridwhoutstore)
         client.publish("data/gridwhout", ggridwhout, retain=True)  
         client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
       else:
@@ -126,7 +124,6 @@ if evudata == True:
         gridwhin = gridwatt * intervall / 3600
         if debug == True: print("gridwhin: ", gridwhin)
         ggridwhin = gridwhin + gridwhinstore
-        if debug == True: print("gird wh in store: ", gridwhinstore)
         client.publish("data/gridwhin", ggridwhin, retain=True)
         client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
   
@@ -182,15 +179,13 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
       batwhout = batwatt * intervall / 3600
       if debug == True: print("batwhout: ", batwhout)
       gbatwhout = batwhout + batwhoutstore
-      if debug == True: print("bat wh out store: ", batwhoutstore)
       client.publish("data/batwhout", gbatwhout, retain=True)
       client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
     else:
       batwatt = abs(batwatt)
       batwhin = batwatt * intervall / 3600
-      if debug == True: print("batwhin: ", batwhin)
-      gbatwhin = batwhin + batwhinstore
-      if debug == True: print("bat wh in store: ", batwhinstore)
+      if debug == True: print("batwhin: ", batwhintstore)
+      gbatwhin = batwhin + batwhintstore
       client.publish("data/batwhin", gbatwhin, retain=True)
       client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
 
@@ -210,9 +205,10 @@ if pvdata == True:
       pvwh = pvwatt * intervall / 3600
       if debug == True: print("pvwh: ", pvwh)
       gpvwh = pvwh + pvwhstore
-      if debug == True: print("pv wh out store: ", pvwhstore)
       client.publish("data/pvwh", gpvwh, retain=True)
       client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
+
+
 
 
 #warten 1 Sekunden da der Client sonst zu schnell disconnectet
