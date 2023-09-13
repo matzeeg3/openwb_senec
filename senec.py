@@ -7,10 +7,10 @@ import paho.mqtt.client as mqtt
 
 start_time = time.time()
 
-ipaddress = "senec_ip"
-broker_address = "openwb ip"
+ipaddress = "senecip"
+broker_address = "openwb or broker ip"
 broker_port = 1883
-debug = False #True  oder False
+debug = True #True  oder False
 evudata = True #True  oder False
 pvdata = True #True oder False
 intervall = 5
@@ -70,26 +70,43 @@ def writeVal(stringValue, multiplier, decimalpoints):
 subreturn=0
 def on_message(client, userdata, message):
     global subreturn
-    if debug == True: print("message topic " ,str(message.topic))
-    if debug == True: print("message received " ,str(message.payload.decode("utf-8")))
+    if debug == True: print("message topic " ,str(message.topic)," message received " ,str(message.payload.decode("utf-8")))
     subreturn = (message.payload.decode("utf-8"))
 
 
 client.on_message=on_message
 
+reqdata = '{"PM1OBJ1": {"FREQ":"","U_AC":"","I_AC":"","P_AC":"","P_TOTAL":""},"ENERGY": {"GUI_BAT_DATA_FUEL_CHARGE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":""}}'
+reqdata = bytes(reqdata, 'utf-8')
+response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
+jsondata = json.load(response)
 
-
-
+client.loop_start()
+client.subscribe("data/gridwhout", qos=0)
+time.sleep(0.15)
+gridwhoutstore=float(subreturn)
+client.subscribe("data/gridwhin", qos=0)
+time.sleep(0.15)
+gridwhinstore=float(subreturn)
+client.subscribe("data/batwhout", qos=0)
+time.sleep(0.15)
+batwhoutstore=float(subreturn)
+client.subscribe("data/batwhin", qos=0)
+time.sleep(0.15)
+batwhintstore=float(subreturn)
+client.subscribe("data/pvwh", qos=0)
+time.sleep(0.15)
+pvwhstore=float(subreturn)
+client.loop_stop()
+if debug == True:print("gridwhoutstore: ", gridwhoutstore)
+if debug == True:print("gridwhinstore: ", gridwhinstore)
+if debug == True:print("batwhoutstore: ", batwhoutstore)
+if debug == True:print("batwhintstore: ", batwhintstore)
+if debug == True:print("pvwhstore: ", pvwhstore)
 
 if evudata == True:
   #EVU Daten
-  reqdata = '{"PM1OBJ1":{"FREQ":"","U_AC":"","I_AC":"","P_AC":"","P_TOTAL":""}}'
-  reqdata = bytes(reqdata, 'utf-8')
-  response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
-  jsondata = json.load(response)
-  
-  
-  
+    
   #SENEC: Gesamtleistung (W) Werte -3000  >> 3000
   if not (jsondata['PM1OBJ1'] ['P_TOTAL'] is None):
       topic = "openWB/set/evu/W"
@@ -97,26 +114,16 @@ if evudata == True:
       client.publish(topic, gridwatt, qos=0)
       if gridwatt < 0:
         gridwatt = abs(gridwatt)
-        client.loop_start()
-        client.subscribe("data/gridwhout", qos=0)
-        time.sleep(0.15)
-        client.loop_stop()
         gridwhout = gridwatt * intervall / 3600
         if debug == True: print("gridwhout: ", gridwhout)
-        ggridwhout = gridwhout + float(subreturn)
-        if debug == True: print("gird wh out store: ", float(subreturn))
+        ggridwhout = gridwhout + gridwhoutstore
         client.publish("data/gridwhout", ggridwhout, retain=True)  
         client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
       else:
         gridwatt = abs(gridwatt)
-        client.loop_start()
-        client.subscribe("data/gridwhin", qos=0)
-        time.sleep(0.15)
-        client.loop_stop()
         gridwhin = gridwatt * intervall / 3600
         if debug == True: print("gridwhin: ", gridwhin)
-        ggridwhin = gridwhin + float(subreturn)
-        if debug == True: print("gird wh in store: ", float(subreturn))
+        ggridwhin = gridwhin + gridwhinstore
         client.publish("data/gridwhin", ggridwhin, retain=True)
         client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
   
@@ -161,10 +168,6 @@ if evudata == True:
       client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2))
 
 #Batteriedaten:
-reqdata='{"ENERGY":{"GUI_BAT_DATA_FUEL_CHARGE":"","GUI_BAT_DATA_POWER":"","GUI_BAT_DATA_VOLTAGE":"","GUI_BAT_DATA_OA_CHARGING":"","GUI_INVERTER_POWER":""}}'
-reqdata = bytes(reqdata, 'utf-8')
-response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
-jsondata = json.load(response)
 
 #SENEC: Batterieleistung (W) Werte -345 (Entladen) >> 1200 (laden)
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
@@ -173,26 +176,16 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
     client.publish(topic, batwatt, qos=0)
     if batwatt < 0:
       batwatt = abs(batwatt)
-      client.loop_start()
-      client.subscribe("data/batwhout", qos=0)
-      time.sleep(0.15)
-      client.loop_stop()
       batwhout = batwatt * intervall / 3600
       if debug == True: print("batwhout: ", batwhout)
-      gbatwhout = batwhout + float(subreturn)
-      if debug == True: print("bat wh out store: ", float(subreturn))
+      gbatwhout = batwhout + batwhoutstore
       client.publish("data/batwhout", gbatwhout, retain=True)
       client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
     else:
       batwatt = abs(batwatt)
-      client.loop_start()
-      client.subscribe("data/batwhin", qos=0)
-      time.sleep(0.15)
-      client.loop_stop()
       batwhin = batwatt * intervall / 3600
-      if debug == True: print("batwhin: ", batwhin)
-      gbatwhin = batwhin + float(subreturn)
-      if debug == True: print("bat wh in store: ", float(subreturn))
+      if debug == True: print("batwhin: ", batwhintstore)
+      gbatwhin = batwhin + batwhintstore
       client.publish("data/batwhin", gbatwhin, retain=True)
       client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
 
@@ -208,16 +201,11 @@ if pvdata == True:
   #SENEC: Leistung Wechselrichter in (W) Werte
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       topic = "openWB/set/pv/1/W"
+      client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
       pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
-      client.publish(topic, pvwatt)
-      client.loop_start()
-      client.subscribe("data/pvwh", qos=0)
-      time.sleep(0.15)
-      client.loop_stop()
       pvwh = pvwatt * intervall / 3600
       if debug == True: print("pvwh: ", pvwh)
-      gpvwh = pvwh + float(subreturn)
-      if debug == True: print("pv wh out store: ", float(subreturn))
+      gpvwh = pvwh + pvwhstore
       client.publish("data/pvwh", gpvwh, retain=True)
       client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
 
