@@ -5,17 +5,17 @@ import time
 import ssl
 import paho.mqtt.client as mqtt
 
-start_time = time.time()
-
 ipaddress = "senecip"
 broker_address = "openwb or broker ip"
 broker_port = 1883
 debug = True #True  oder False
 evudata = True #True  oder False
 pvdata = True #True oder False
+whcalc = True #True oder False
+openwbv = "1"
 intervall = 5
 
-#ipaddress = str(sys.argv[1])
+if debug == True: start_time = time.time()
 
 client = mqtt.Client()
 # Verbinden mit dem Broker
@@ -42,7 +42,6 @@ def myDecode(stringValue):
 def writeVal(stringValue, multiplier, decimalpoints):
 
 #Parameter
-#filePath:              Pfad und Dateiname in der der ein Wert geschrieben wird
 #stringValue:   Wert der nach dem knonvertieren in die Datei geschrieben wird
 #multiplier:    Wert mit dem die Zahl vor der Rundung multipliziert wird
 #decimalpoints: Anzahl Kommastellen
@@ -81,28 +80,29 @@ reqdata = bytes(reqdata, 'utf-8')
 response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
 jsondata = json.load(response)
 
-client.loop_start()
-client.subscribe("data/gridwhout", qos=0)
-time.sleep(0.15)
-gridwhoutstore=float(subreturn)
-client.subscribe("data/gridwhin", qos=0)
-time.sleep(0.15)
-gridwhinstore=float(subreturn)
-client.subscribe("data/batwhout", qos=0)
-time.sleep(0.15)
-batwhoutstore=float(subreturn)
-client.subscribe("data/batwhin", qos=0)
-time.sleep(0.15)
-batwhintstore=float(subreturn)
-client.subscribe("data/pvwh", qos=0)
-time.sleep(0.15)
-pvwhstore=float(subreturn)
-client.loop_stop()
-if debug == True:print("gridwhoutstore: ", gridwhoutstore)
-if debug == True:print("gridwhinstore: ", gridwhinstore)
-if debug == True:print("batwhoutstore: ", batwhoutstore)
-if debug == True:print("batwhintstore: ", batwhintstore)
-if debug == True:print("pvwhstore: ", pvwhstore)
+if whcalc == True:
+  client.loop_start()
+  client.subscribe("data/gridwhout", qos=0)
+  time.sleep(0.15)
+  gridwhoutstore=float(subreturn)
+  client.subscribe("data/gridwhin", qos=0)
+  time.sleep(0.15)
+  gridwhinstore=float(subreturn)
+  client.subscribe("data/batwhout", qos=0)
+  time.sleep(0.15)
+  batwhoutstore=float(subreturn)
+  client.subscribe("data/batwhin", qos=0)
+  time.sleep(0.15)
+  batwhintstore=float(subreturn)
+  client.subscribe("data/pvwh", qos=0)
+  time.sleep(0.15)
+  pvwhstore=float(subreturn)
+  client.loop_stop()
+  if debug == True:print("gridwhoutstore: ", gridwhoutstore)
+  if debug == True:print("gridwhinstore: ", gridwhinstore)
+  if debug == True:print("batwhoutstore: ", batwhoutstore)
+  if debug == True:print("batwhintstore: ", batwhintstore)
+  if debug == True:print("pvwhstore: ", pvwhstore)
 
 if evudata == True:
   #EVU Daten
@@ -112,19 +112,20 @@ if evudata == True:
       topic = "openWB/set/evu/W"
       gridwatt = writeVal(jsondata['PM1OBJ1'] ['P_TOTAL'],0,0)
       client.publish(topic, gridwatt, qos=0)
-      if gridwatt < 0:
-        gridwatt = abs(gridwatt)
-        gridwhout = gridwatt * intervall / 3600
-        if debug == True: print("gridwhout: ", gridwhout)
-        ggridwhout = gridwhout + gridwhoutstore
-        client.publish("data/gridwhout", ggridwhout, retain=True)  
-        client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
-      else:
-        gridwatt = abs(gridwatt)
-        gridwhin = gridwatt * intervall / 3600
-        if debug == True: print("gridwhin: ", gridwhin)
-        ggridwhin = gridwhin + gridwhinstore
-        client.publish("data/gridwhin", ggridwhin, retain=True)
+      if whcalc == True:
+        if gridwatt < 0:
+          gridwatt = abs(gridwatt)
+          gridwhout = gridwatt * intervall / 3600
+          if debug == True: print("gridwhout: ", gridwhout)
+          ggridwhout = gridwhout + gridwhoutstore
+          client.publish("data/gridwhout", ggridwhout, retain=True)  
+          client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
+        else:
+          gridwatt = abs(gridwatt)
+          gridwhin = gridwatt * intervall / 3600
+          if debug == True: print("gridwhin: ", gridwhin)
+          ggridwhin = gridwhin + gridwhinstore
+          client.publish("data/gridwhin", ggridwhin, retain=True)
         client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
   
   
@@ -174,20 +175,21 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
     topic = "openWB/set/houseBattery/W"
     batwatt = writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'],0,0)
     client.publish(topic, batwatt, qos=0)
-    if batwatt < 0:
-      batwatt = abs(batwatt)
-      batwhout = batwatt * intervall / 3600
-      if debug == True: print("batwhout: ", batwhout)
-      gbatwhout = batwhout + batwhoutstore
-      client.publish("data/batwhout", gbatwhout, retain=True)
-      client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
-    else:
-      batwatt = abs(batwatt)
-      batwhin = batwatt * intervall / 3600
-      if debug == True: print("batwhin: ", batwhintstore)
-      gbatwhin = batwhin + batwhintstore
-      client.publish("data/batwhin", gbatwhin, retain=True)
-      client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
+    if whcalc == True:
+      if batwatt < 0:
+        batwatt = abs(batwatt)
+        batwhout = batwatt * intervall / 3600
+        if debug == True: print("batwhout: ", batwhout)
+        gbatwhout = batwhout + batwhoutstore
+        client.publish("data/batwhout", gbatwhout, retain=True)
+        client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
+      else:
+        batwatt = abs(batwatt)
+        batwhin = batwatt * intervall / 3600
+        if debug == True: print("batwhin: ", batwhintstore)
+        gbatwhin = batwhin + batwhintstore
+        client.publish("data/batwhin", gbatwhin, retain=True)
+        client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
 
 #SENEC: Fuellmenge in Prozent Werte 10 >> 55 >> 100
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'] is None):
@@ -202,12 +204,13 @@ if pvdata == True:
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       topic = "openWB/set/pv/1/W"
       client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
-      pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
-      pvwh = pvwatt * intervall / 3600
-      if debug == True: print("pvwh: ", pvwh)
-      gpvwh = pvwh + pvwhstore
-      client.publish("data/pvwh", gpvwh, retain=True)
-      client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
+      if whcalc == True:
+        pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
+        pvwh = pvwatt * intervall / 3600
+        if debug == True: print("pvwh: ", pvwh)
+        gpvwh = pvwh + pvwhstore
+        client.publish("data/pvwh", gpvwh, retain=True)
+        client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
 
 
 
@@ -216,9 +219,9 @@ if pvdata == True:
 time.sleep (0.2)
 # Client beenden
 client.disconnect()
-end_time = time.time()
+if debug == True: end_time = time.time()
 # Die Gesamtdauer in Sekunden berechnen
-execution_time = end_time - start_time
+if debug == True: execution_time = end_time - start_time
 
 # Die Ausführungszeit in Sekunden ausgeben
-print(f"Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
+if debug == True: print(f"Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
