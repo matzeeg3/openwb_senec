@@ -201,6 +201,7 @@ if pvdata == True:
   #SENEC: Leistung Wechselrichter in (W) Werte
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       topic = "openWB/set/pv/1/W"
+      client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0))
       pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
       pvwh = pvwatt * intervall / 3600
       if debug == True: print("pvwh: ", pvwh)
