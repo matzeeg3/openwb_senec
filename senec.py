@@ -5,13 +5,13 @@ import time
 import ssl
 import paho.mqtt.client as mqtt
 
-ipaddress = "senecip"
-broker_address = "openwb or broker ip"
+ipaddress = "10.10.10.5"
+broker_address = "127.0.0.1"
 broker_port = 1883
 debug = True #True  oder False
 evudata = True #True  oder False
 pvdata = True #True oder False
-whcalc = True #True oder False
+whcalc = False #True oder False
 openwbv = "1"
 intervall = 5
 
