@@ -4,8 +4,8 @@ Installation Steps:
 1. Install Python3 (sudo apt install python3, python3-pip -y)
 2. Install Python3 Paho MQTT (pip install paho-mqtt
 3. create a folder (example: mkdir senec)
-4. clone the git reposetory (git clone --branch main https://github.com/matzeeg3/openwb_senec.git) (switch branch from main to kwh_calc if you want statistic data)
-5. edit the variable for broker and senecip to fits your needs
+4. clone the git reposetory (git clone --branch main https://github.com/matzeeg3/openwb_senec.git)
+5. edit the variable for broker and senecip to fits your needs and kwhcalc for statistic data
 6. typ pwd to copy your path
 7. change the path in this table and add it to your crontab via crontab -e
    ```
