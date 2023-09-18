@@ -5,8 +5,8 @@ import time
 import ssl
 import paho.mqtt.client as mqtt
 
-ipaddress = "10.10.10.5" # senec ip
-broker_address = "10.10.0.42" #openwb or mqtt broker ip
+ipaddress = "senecip" # senec ip
+broker_address = "openwb or mqtt broker" #openwb or mqtt broker ip
 broker_port = 1883 #mqtt port default 1883
 debug = False #True  oder False
 evudata = True #True  oder False
@@ -243,7 +243,9 @@ if pvdata == True:
       if openwbv == "1": topic = "openWB/set/pv/1/W"
       if openwbv == "1": client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0), qos=0)
       if openwbv == "2": topic = "openWB/set/pv/"+openwbpvid+"/get/power"
-      if openwbv == "2": client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0), qos=0)
+      if openwbv == "2": pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
+      if openwbv == "2": pvwatt = pvwatt*-1
+      if openwbv == "2": client.publish(topic, pvwatt, qos=0)
       if whcalc == True:
         pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
         pvwh = pvwatt * intervall / 3600
