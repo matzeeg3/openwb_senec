@@ -22,7 +22,9 @@ Installation Steps:
    * * * * * sleep 50 && python /path-to-script/senec.py >/dev/null 2>&1
    * * * * * sleep 55 && python /path-to-script/senec.py >/dev/null 2>&1
    ```
-8. Enjoy
+8. In der openWb die Module noch auf MQTT stellen.
+
+9. Enjoy
 
 
 ## Next Steps
