@@ -5,7 +5,7 @@ Installation Steps:
 2. Install Python3 Paho MQTT (pip install paho-mqtt
 3. create a folder (example: mkdir senec)
 4. clone the git reposetory (git clone --branch main https://github.com/matzeeg3/openwb_senec.git)
-5. edit the variable for broker and senecip to fits your needs and whcalc for statistic data
+5. edit the variable for broker and senecip to fits your needs and whcalc for statistic data also you can switch from openwb software 1 to openwb software 2
 6. typ pwd to copy your path
 7. change the path in this table and add it to your crontab via crontab -e
    ```
@@ -28,5 +28,4 @@ Installation Steps:
 ## Next Steps
 - Better Error Handling
 - Script Optimisazion (Threading)
-- Add Variable that Script can be used in openWB Software 1 and Software 2
 - Add Docker Container for easy deployment via Enviroment Variables
