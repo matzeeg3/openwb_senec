@@ -10,17 +10,17 @@ Installation Steps:
 7. change the path in this table and add it to your crontab via crontab -e
    ```
    * * * * * python3 /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 5 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 10 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 15 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 20 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 25 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 30 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 35 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 40 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 45 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 50 && python /path-to-script/senec.py >/dev/null 2>&1
-   * * * * * sleep 55 && python /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 5 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 10 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 15 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 20 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 25 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 30 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 35 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 40 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 45 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 50 && python3 /path-to-script/senec.py >/dev/null 2>&1
+   * * * * * sleep 55 && python3 /path-to-script/senec.py >/dev/null 2>&1
    ```
 8. in openWB set Battery, ENV (if enabled), PV (if enabled) to MQTT.
 
