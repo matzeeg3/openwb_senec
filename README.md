@@ -1,5 +1,5 @@
 # Senec to openWB or MQTT Broker Tool
-##English
+## English
 Reads Data from Senec (new Version with https) and sends the Data to openWB(via MQTT can be any Broker)  
 Installation Steps:  
 1. Install Python3 (sudo apt install python3, python3-pip -y)
@@ -26,7 +26,7 @@ Installation Steps:
 8. in openWB set Battery, ENV (if enabled), PV (if enabled) to MQTT.
 9. Enjoy  
 
-##German
+## German
 Liest Daten vom Senec (neue Version mit https) und sendet diese Daten an openWB Software 1 oder 2 oder an jeden anderen MQTT Broker  
 Installations Schritte:  
 1. Python3 Installieren (sudo apt install python3, python3-pip -y)
