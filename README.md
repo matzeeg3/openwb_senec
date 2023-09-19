@@ -24,7 +24,7 @@ Installation Steps:
    * * * * * sleep 55 && python3 /path-to-script/senec.py >/dev/null 2>&1
    ```
 8. in openWB set Battery, ENV (if enabled), PV (if enabled) to MQTT.
-9. Enjoy
+9. Enjoy  
 
 ##German
 Liest Daten vom Senec (neue Version mit https) und sendet diese Daten an openWB Software 1 oder 2 oder an jeden anderen MQTT Broker  
