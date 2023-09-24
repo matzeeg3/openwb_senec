@@ -1,0 +1,12 @@
+ipaddress = "senecip"  #senec ip
+broker_address = "openwb"  #openwb or mqtt broker ip
+broker_port = 1883  #mqtt port default 1883
+debug = False  #True  oder False
+evudata = True  #True  oder False
+pvdata = True  #True oder False
+whcalc = True  #True oder False
+intervall = 5  #Intervall für WH Berechnung standard 5 Sec
+openwbv = "2"  #openwb version für mqtt topics
+openwbenvid = "0"  #nur openWB2 ID für ENV
+openwbpvid = "2"  #nur openWB2 ID für PV
+openwbbatid = "1"  #nur openWB2 ID für Batterie
