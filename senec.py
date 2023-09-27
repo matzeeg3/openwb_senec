@@ -271,4 +271,4 @@ if debug == True: end_time = time.time()
 if debug == True: execution_time = end_time - start_time
 
 # Die Ausführungszeit in Sekunden ausgeben
-if debug == True: print("Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
+if debug == True: print("Das Skript wurde in {:.2f} Sekunden ausgeführt.".format(execution_time))
