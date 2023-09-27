@@ -84,7 +84,8 @@ client.on_message=on_message
 reqdata = '{"PM1OBJ1": {"FREQ":"","U_AC":"","I_AC":"","P_AC":"","P_TOTAL":""},"ENERGY": {"GUI_BAT_DATA_FUEL_CHARGE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":""}}'
 reqdata = bytes(reqdata, 'utf-8')
 response = urllib.request.urlopen('https://' + ipaddress + '/lala.cgi', data=reqdata, context=ssl._create_unverified_context())
-jsondata = json.load(response)
+#jsondata = json.load(response)
+jsondata = json.loads(response.read().decode('utf-8'))
 
 if whcalc == True:
   client.loop_start()
@@ -270,4 +271,4 @@ if debug == True: end_time = time.time()
 if debug == True: execution_time = end_time - start_time
 
 # Die Ausführungszeit in Sekunden ausgeben
-if debug == True: print(f"Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
+if debug == True: print("Das Skript wurde in {execution_time:.2f} Sekunden ausgeführt.")
