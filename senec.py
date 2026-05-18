@@ -119,7 +119,7 @@ if evudata == True:
       gridwatt = writeVal(jsondata['PM1OBJ1'] ['P_TOTAL'],0,0)
       if openwbv == "1": topic = "openWB/set/evu/W"
       if openwbv == "1": client.publish(topic, gridwatt, qos=0)
-      if openwbv == "2": topic = "openWB/set/counter/"+openwbenvid+"/get/power"
+      if openwbv == "2": topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/power"
       if openwbv == "2": client.publish(topic, gridwatt, qos=0)
       if whcalc == True:
         if gridwatt < 0:
@@ -129,7 +129,7 @@ if evudata == True:
           ggridwhout = gridwhout + gridwhoutstore
           client.publish("data/gridwhout", ggridwhout, retain=True)  
           if openwbv == "1": client.publish("openWB/set/evu/WhExported", ggridwhout, qos=0)
-          if openwbv == "2": topic = "openWB/set/counter/"+openwbenvid+"/get/exported"
+          if openwbv == "2": topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/exported"
           if openwbv == "2": client.publish(topic, ggridwhout, qos=0)
         else:
           gridwatt = abs(gridwatt)
@@ -138,7 +138,7 @@ if evudata == True:
           ggridwhin = gridwhin + gridwhinstore
           client.publish("data/gridwhin", ggridwhin, retain=True)
           if openwbv == "1": client.publish("openWB/set/evu/WhImported", ggridwhin, qos=0)
-          if openwbv == "2": topic = "openWB/set/counter/"+openwbenvid+"/get/imported"
+          if openwbv == "2": topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/imported"
           if openwbv == "2": client.publish(topic, ggridwhin, qos=0)
   
   
@@ -146,7 +146,7 @@ if evudata == True:
   if not (jsondata['PM1OBJ1'] ['FREQ'] is None):
       if openwbv == "1": topic = "openWB/set/evu/HzFrequenz"
       if openwbv == "1": client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['FREQ'],0,2), qos=0)
-      if openwbv == "2": topic = "openWB/set/counter/"+openwbenvid+"/get/frequency"
+      if openwbv == "2": topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/frequency"
       if openwbv == "2": client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['FREQ'],0,2), qos=0)
   
   #SENEC: Spannung (V) Werte 219.12 >> 223.43
@@ -161,7 +161,7 @@ if evudata == True:
       client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['U_AC'] [2],0,2), qos=0)
   #openwb2
   if all([not (jsondata['PM1OBJ1'] ['U_AC'][i] is None) for i in range(3)]) and openwbv == "2":
-     topic = "openWB/set/counter/"+openwbenvid+"/get/voltages"
+     topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/voltages"
      varray = "["+",".join([str(writeVal(jsondata['PM1OBJ1']['U_AC'][i], 0, 2)) for i in range(3)])+"]"
      client.publish(topic, varray, qos=0)
 
@@ -180,7 +180,7 @@ if evudata == True:
       client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['P_AC'] [2],0,0), qos=0)
   #openwb2
   if all([not (jsondata['PM1OBJ1'] ['P_AC'][i] is None) for i in range(3)]) and openwbv == "2":
-     topic = "openWB/set/counter/"+openwbenvid+"/get/powers"
+     topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/powers"
      warray = "["+",".join([str(writeVal(jsondata['PM1OBJ1']['P_AC'][i], 0, 2)) for i in range(3)])+"]"
      client.publish(topic, warray, qos=0)
   
@@ -197,7 +197,7 @@ if evudata == True:
       if openwbv == "1": client.publish(topic, writeVal(jsondata['PM1OBJ1'] ['I_AC'] [2],0,2), qos=0)
   #openwb2
   if all([not (jsondata['PM1OBJ1'] ['I_AC'][i] is None) for i in range(3)]) and openwbv == "2":
-     topic = "openWB/set/counter/"+openwbenvid+"/get/currents"
+     topic = "openWB/set/mqtt/counter/"+openwbenvid+"/get/currents"
      aarray = "["+",".join([str(writeVal(jsondata['PM1OBJ1']['I_AC'][i], 0, 2)) for i in range(3)])+"]"
      client.publish(topic, aarray, qos=0)
 
@@ -208,7 +208,7 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
     batwatt = writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'],0,0)
     if openwbv == "1": topic = "openWB/set/houseBattery/W"
     if openwbv == "1": client.publish(topic, batwatt, qos=0)
-    if openwbv == "2": topic = "openWB/set/bat/"+openwbbatid+"/get/power"
+    if openwbv == "2": topic = "openWB/set/mqtt/bat/"+openwbbatid+"/get/power"
     if openwbv == "2": client.publish(topic, batwatt, qos=0)
     if whcalc == True:
       if batwatt < 0:
@@ -218,7 +218,7 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
         gbatwhout = batwhout + batwhoutstore
         client.publish("data/batwhout", gbatwhout, retain=True)
         if openwbv == "1": client.publish("openWB/set/houseBattery/WhExported", gbatwhout, qos=0) 
-        if openwbv == "2": topic = "openWB/set/bat/"+openwbbatid+"/get/exported"
+        if openwbv == "2": topic = "openWB/set/mqtt/bat/"+openwbbatid+"/get/exported"
         if openwbv == "2": client.publish(topic, gbatwhout, qos=0)
       else:
         batwatt = abs(batwatt)
@@ -227,14 +227,14 @@ if not (jsondata['ENERGY'] ['GUI_BAT_DATA_POWER'] is None):
         gbatwhin = batwhin + batwhintstore
         client.publish("data/batwhin", gbatwhin, retain=True)
         if openwbv == "1": client.publish("openWB/set/houseBattery/WhImported", gbatwhin, qos=0)  
-        if openwbv == "2": topic = "openWB/set/bat/"+openwbbatid+"/get/imported"
+        if openwbv == "2": topic = "openWB/set/mqtt/bat/"+openwbbatid+"/get/imported"
         if openwbv == "2": client.publish(topic, gbatwhin, qos=0)
 
 #SENEC: Fuellmenge in Prozent Werte 10 >> 55 >> 100
 if not (jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'] is None):
     topic = "openWB/set/houseBattery/%Soc"
     if openwbv == "1": client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'],0,0), qos=0)
-    if openwbv == "2": topic = "openWB/set/bat/"+openwbbatid+"/get/soc"
+    if openwbv == "2": topic = "openWB/set/mqtt/bat/"+openwbbatid+"/get/soc"
     if openwbv == "2": client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_BAT_DATA_FUEL_CHARGE'],0,0), qos=0)
 
 
@@ -245,7 +245,7 @@ if pvdata == True:
   if not (jsondata['ENERGY'] ['GUI_INVERTER_POWER'] is None):
       if openwbv == "1": topic = "openWB/set/pv/1/W"
       if openwbv == "1": client.publish(topic, writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0), qos=0)
-      if openwbv == "2": topic = "openWB/set/pv/"+openwbpvid+"/get/power"
+      if openwbv == "2": topic = "openWB/set/mqtt/pv/"+openwbpvid+"/get/power"
       if openwbv == "2": pvwatt = writeVal(jsondata['ENERGY'] ['GUI_INVERTER_POWER'],0,0)
       if openwbv == "2": pvwatt = pvwatt*-1
       if openwbv == "2": client.publish(topic, pvwatt, qos=0)
@@ -256,7 +256,7 @@ if pvdata == True:
         gpvwh = pvwh + pvwhstore
         client.publish("data/pvwh", gpvwh, retain=True)
         if openwbv == "1": client.publish("openWB/set/pv/1/WhCounter", gpvwh, qos=0)
-        if openwbv == "2": topic = "openWB/set/pv/"+openwbpvid+"/get/exported"
+        if openwbv == "2": topic = "openWB/set/mqtt/pv/"+openwbpvid+"/get/exported"
         if openwbv == "2": client.publish(topic, gpvwh, qos=0)
 
 
